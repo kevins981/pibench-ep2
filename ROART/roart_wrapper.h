@@ -11,7 +11,6 @@
 std::atomic<uint64_t> pmem_allocated(0);
 std::atomic<uint64_t> pmem_deallocated(0);
 
-
 using namespace PART_ns;
 
 class roart_wrapper : public tree_api
@@ -21,7 +20,7 @@ public:
   virtual ~roart_wrapper();
 
   virtual bool find(const char *key, size_t key_sz, char *value_out) override;
-  virtual bool insert(const char *key, size_t key_sz, const char *value, size_t value_sz) override;
+  virtual bool insert(const char *key, size_t key_sz, const product **value, size_t value_sz) override;
   virtual bool update(const char *key, size_t key_sz, const char *value, size_t value_sz) override;
   virtual bool remove(const char *key, size_t key_sz) override;
   virtual int scan(const char *key, size_t key_sz, int scan_sz, char *&values_out) override;
@@ -66,8 +65,8 @@ bool roart_wrapper::find(const char *key, size_t key_sz, char *value_out)
 #ifdef KEY_INLINE
   Key k = Key(*reinterpret_cast<const uint64_t*>(key), key_sz, 0);
 #else
-  Key k;
-  k.Init(const_cast<char*>(key), key_sz, const_cast<char*>(value_out), 8);
+  //Key k;
+  //k.Init(const_cast<char*>(key), key_sz, const_cast<char*>(value_out), 8);
 #endif
   auto leaf = roart.lookup(&k);
 
@@ -82,14 +81,14 @@ bool roart_wrapper::find(const char *key, size_t key_sz, char *value_out)
   return false;
 }
 
-bool roart_wrapper::insert(const char *key, size_t key_sz, const char *value, size_t value_sz)
+bool roart_wrapper::insert(const char *key, size_t key_sz, const product **value, size_t value_sz)
 {
   thread_local ThreadHelper t;
 #ifdef KEY_INLINE
   Key k = Key(*reinterpret_cast<const uint64_t*>(key), key_sz, *reinterpret_cast<const uint64_t*>(value));
 #else
-  Key k;
-  k.Init(const_cast<char*>(key), key_sz, const_cast<char*>(value), value_sz);
+  //Key k;
+  //k.Init(const_cast<char*>(key), key_sz, const_cast<char*>(value), value_sz);
 #endif
   Tree::OperationResults result = roart.insert(&k);
   if (result != Tree::OperationResults::Success)

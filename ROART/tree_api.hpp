@@ -27,6 +27,11 @@ struct tree_options_t
     size_t num_threads = 1;
 };
 
+struct product {
+  int field1;
+  double field2;
+};
+
 class tree_api;
 extern "C" tree_api* create_tree(const tree_options_t& opt);
 
@@ -56,7 +61,7 @@ public:
      * @return true if record was successfully inserted.
      * @return false if record was not inserted because it already exists.
      */
-    virtual bool insert(const char* key, size_t key_sz, const char* value, size_t value_sz) = 0;
+    virtual bool insert(const char* key, size_t key_sz, const product **value, size_t value_sz) = 0;
 
     /**
      * @brief Update the record with given key with the new given value.
